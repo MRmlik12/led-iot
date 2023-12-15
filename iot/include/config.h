@@ -2,7 +2,9 @@
 #define IOT_CONFIG_H
 
 // WiFi credentials
-const char* ssid = "";
-const char* password = "";
+const char* SSID = "";
+const char* PASSWORD = "";
+
+const int LED_COUNT = 0;
 
 #endif
