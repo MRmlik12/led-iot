@@ -1,16 +1,23 @@
 #include <FastLED.h>
 #include "led.h"
 
-int r, g, b = 0;
+LedStripManager* LedStripManager::instance_ = nullptr;;
 
-void LedManager::setRGB(int rColor, int gColor, int bColor) {
-    r = rColor;
-    g = gColor;
-    b = bColor;
+LedStripManager *LedStripManager::getInstance() {
+    if(instance_ ==nullptr) {
+        instance_ = new LedStripManager();
+    }
+    return instance_;
 }
 
-CRGB LedManager::getRGB() {
-    return CRGB(r, g, b);
+void LedStripManager::setRGB(int rColor, int gColor, int bColor) {
+    r_ = rColor;
+    g_ = gColor;
+    b_ = bColor;
+}
+
+CRGB LedStripManager::getRGB() {
+    return CRGB(r_, g_, b_);
 }
 
 

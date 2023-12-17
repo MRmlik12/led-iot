@@ -2,7 +2,6 @@
 #include "ESPAsyncWebServer.h"
 #include "ArduinoJson.h"
 #include "led.h"
-LedManager ledManager;
 
 void notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
@@ -17,20 +16,20 @@ void registerRoutes(AsyncWebServer &webServer) {
         request->send(200, "application/json", json);
     });
 
-    webServer.on("/color", HTTP_GET, [](AsyncWebServerRequest *request) {
-        auto rColor = request->getParam("r")->value().toInt();
-        auto gColor = request->getParam("g")->value().toInt();
-        auto bColor = request->getParam("b")->value().toInt();
+    webServer.on("/color", HTTP_POST, [](AsyncWebServerRequest *request) {
+    },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
+        String body = (const char*) data;
+        if (body.length() == 0) {
+            request->send(400, "application/json", "{\"error\": \"body is empty\"}");
+            return;
+        }
 
-        ledManager.setRGB(rColor, gColor, bColor);
+        DynamicJsonDocument jsonDocument(256);
+        ArduinoJson::deserializeJson(jsonDocument, body);
 
-        DynamicJsonDocument jsonModel(256);
-        jsonModel["r"] = rColor;
-        jsonModel["g"] = gColor;
-        jsonModel["b"] = bColor;
-        String json;
-        ArduinoJson::serializeJson(jsonModel, json);
-        request->send(200, "application/json", json);
+        LedStripManager::getInstance()->setRGB(jsonDocument["r"], jsonDocument["g"], jsonDocument["b"]);
+
+        request->send(200, "application/json", body);
     });
 
     webServer.onNotFound(notFound);

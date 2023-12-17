@@ -11,7 +11,6 @@
 
 CRGB leds[LED_COUNT];
 AsyncWebServer server(80);
-LedManager led;
 
 void setup() {
     WiFi.mode(WIFI_STA);
@@ -23,13 +22,12 @@ void setup() {
         delay(500);
     }
 
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     registerRoutes(server);
     server.begin();
 }
 
 void loop() {
-    EVERY_N_MILLIS(500) {
-        FastLED.showColor(led.getRGB());
-    }
+    FastLED.showColor(LedStripManager::getInstance()->getRGB());
 }
 
