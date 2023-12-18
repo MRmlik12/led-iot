@@ -1,4 +1,4 @@
-#include <FastLED.h>
+#include <LittleFS.h>
 #include "ESPAsyncWebServer.h"
 #include "ArduinoJson.h"
 #include "led.h"
@@ -8,13 +8,7 @@ void notFound(AsyncWebServerRequest *request) {
 }
 
 void registerRoutes(AsyncWebServer &webServer) {
-    webServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-        DynamicJsonDocument jsonModel(256);
-        jsonModel["version"] = "1";
-        String json;
-        ArduinoJson::serializeJson(jsonModel, json);
-        request->send(200, "application/json", json);
-    });
+    webServer.serveStatic("/", LittleFS, "/www/").setDefaultFile("index.html");
 
     webServer.on("/color", HTTP_POST, [](AsyncWebServerRequest *request) {
     },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){

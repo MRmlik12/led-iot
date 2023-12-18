@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <FastLED.h>
+#include <LittleFS.h>
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -21,6 +22,8 @@ void setup() {
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
     }
+
+    LittleFS.begin();
 
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     registerRoutes(server);
