@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <FastLED.h>
 #include <LittleFS.h>
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -10,14 +9,13 @@
 #include "config.h"
 #include "led.h"
 
-CRGB leds[LED_COUNT];
 AsyncWebServer server(80);
 
 void setup() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(SSID, PASSWORD);
-    FastLED.addLeds<WS2812B, 2>(leds, LED_COUNT);
-    FastLED.setBrightness(80);
+
+    setupFastLED();
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -31,6 +29,7 @@ void setup() {
 }
 
 void loop() {
-    FastLED.showColor(LedStripManager::getInstance()->getRGB());
+    auto pLedStripManager = LedStripManager::getInstance();
+    pLedStripManager->context->request();
 }
 
