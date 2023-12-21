@@ -34,3 +34,8 @@ body {
     color: #6666ff;
   }
 }
+
+#modes {
+  padding: 1rem;
+  color: #fff;
+}
