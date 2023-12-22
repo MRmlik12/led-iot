@@ -31,7 +31,7 @@ void registerRoutes(AsyncWebServer &webServer) {
     webServer.on("/currentColor", HTTP_GET, [](AsyncWebServerRequest *request) {
         auto rgb = LedStripManager::getInstance()->getRGB();
 
-        DynamicJsonDocument jsonDocument(256);
+        DynamicJsonDocument jsonDocument(240);
 
         jsonDocument["r"] = rgb.r;
         jsonDocument["g"] = rgb.g;

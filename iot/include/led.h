@@ -2,6 +2,7 @@
 #define IOT_LED_H
 
 #include <FastLED.h>
+#include "config.h"
 
 enum LedStripMode {
     NONE,

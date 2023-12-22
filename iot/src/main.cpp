@@ -12,16 +12,18 @@
 AsyncWebServer server(80);
 
 void setup() {
+    LittleFS.begin();
+
+    auto config = getConfiguration();
+
     WiFi.mode(WIFI_STA);
-    WiFi.begin(SSID, PASSWORD);
+    WiFi.begin(config->getSSID(), config->getPassword());
 
     setupFastLED();
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
     }
-
-    LittleFS.begin();
 
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     registerRoutes(server);
