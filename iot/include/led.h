@@ -58,6 +58,7 @@ private:
     int r_ = 0;
     int g_ = 0;
     int b_ = 0;
+    uint8_t brightness_;
     LedStripMode mode_ = LedStripMode::NONE;
 protected:
     LedStripManager() {
@@ -73,6 +74,7 @@ public:
 
     void setRGB(int rColor, int gColor, int bColor);
     void setMode(LedStripMode mode);
+    void setBrightness(uint8_t level);
     LedStripMode getMode();
     CRGB getRGB();
 };

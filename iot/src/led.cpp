@@ -1,7 +1,8 @@
+#define LED_COUNT 26
+
 #include <FastLED.h>
 #include "led.h"
 
-const int LED_COUNT = 26;
 
 CRGB leds[LED_COUNT];
 LedStripManager* LedStripManager::instance_ = nullptr;
@@ -43,9 +44,15 @@ LedStripMode LedStripManager::getMode() {
     return mode_;
 }
 
+void LedStripManager::setBrightness(uint8_t level) {
+    brightness_ = level;
+    FastLED.setBrightness(level);
+}
+
 void Context::transitionTo(LedStripState *state) {
     if (this->state_ != nullptr)
         delete this->state_;
+
     this->state_ = state;
     this->state_->set_context(this);
 }
@@ -69,5 +76,6 @@ void NoneLedStripState::Handle() {
 
 void setupFastLED() {
     FastLED.addLeds<WS2812B, 5>(leds, LED_COUNT);
+    FastLED.setMaxRefreshRate(200);
     FastLED.setBrightness(80);
 }

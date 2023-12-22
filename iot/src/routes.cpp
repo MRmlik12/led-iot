@@ -60,5 +60,22 @@ void registerRoutes(AsyncWebServer &webServer) {
         request->send(200, "application/json", body);
     });
 
+    webServer.on("/brightness", HTTP_POST, [](AsyncWebServerRequest *request) {
+    },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
+        String body = (const char*) data;
+        if (body.length() == 0) {
+            request->send(400, "application/json", "{\"error\": \"body is empty\"}");
+            return;
+        }
+
+        DynamicJsonDocument jsonDocument(256);
+        ArduinoJson::deserializeJson(jsonDocument, body);
+
+        auto level = static_cast<uint8_t>(jsonDocument["level"]);
+        LedStripManager::getInstance()->setBrightness(level);
+
+        request->send(200);
+    });
+
     webServer.onNotFound(notFound);
 }
