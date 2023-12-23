@@ -14,6 +14,13 @@ export const changeLedStripMode = async (data: any) => {
     })
 }
 
+export const changeBrightness = async (data: any) => {
+    await fetch("brightness", {
+        body: data,
+        method: "POST"
+    })
+}
+
 export const getLedStripColor = async (): Promise<RgbModel | undefined> => {
     return await fetch("/currentRgb")
         .then(async (data) => {

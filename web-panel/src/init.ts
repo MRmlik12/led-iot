@@ -1,6 +1,6 @@
 import iro from "@jaames/iro";
-import { DIV_PICKER_ID, MODE_RADIO_BUTTONS_ID } from "./consts.ts";
-import { changeLedStripColor, changeLedStripMode } from "./api/actions.ts";
+import { BRIGHTNESS_RANGE_ID, DIV_PICKER_ID, MODE_RADIO_BUTTONS_ID } from "./consts.ts";
+import { changeBrightness, changeLedStripColor, changeLedStripMode } from "./api/actions.ts";
 
 export const setupColorPicker = () => {
     const colorPicker = iro.ColorPicker(`#${DIV_PICKER_ID}`, {
@@ -28,4 +28,22 @@ export const setupModeSelect = () => {
             await changeLedStripMode(json);
         })
     }
+}
+
+export const setupBrightnessRange = () => {
+    const brightness = document.getElementById(BRIGHTNESS_RANGE_ID);
+
+    brightness?.addEventListener("change", async (e) => {
+        const target = (e as InputEvent).target;
+        if (target == null) {
+            return;
+        }
+
+        const level = parseInt((target as HTMLInputElement).value);
+        const model = {
+            level
+        };
+
+        await changeBrightness(JSON.stringify(model));
+    });
 }

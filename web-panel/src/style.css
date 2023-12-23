@@ -3,6 +3,7 @@
 body {
   background-color: #242424;
   font-family: 'Roboto', sans-serif;
+  color: #fff;
 }
 
 #container {
@@ -37,5 +38,11 @@ body {
 
 #modes {
   padding: 1rem;
-  color: #fff;
+}
+
+#slider {
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
