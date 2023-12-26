@@ -8,7 +8,7 @@ Config* getConfiguration() {
     DynamicJsonDocument json(256);
     ArduinoJson::deserializeJson(json, content);
 
-    return new Config(json["ssid"], json["password"]);
+    return new Config(json["ssid"], json["password"], json["hostname"]);
 }
 
 String Config::getSSID() {
@@ -17,4 +17,8 @@ String Config::getSSID() {
 
 String Config::getPassword() {
     return password_;
+}
+
+String Config::getHostname() {
+    return hostname_;
 }

@@ -17,6 +17,7 @@ void setup() {
     auto config = getConfiguration();
 
     WiFi.mode(WIFI_STA);
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
     WiFi.begin(config->getSSID(), config->getPassword());
 
     setupFastLED();
@@ -25,12 +26,20 @@ void setup() {
         delay(500);
     }
 
+    if (!MDNS.begin(config->getHostname())) {
+        delay(500);
+    }
+
+    MDNS.addService("http", "tcp", 80);
+
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     registerRoutes(server);
     server.begin();
 }
 
 void loop() {
+    MDNS.update();
+
     auto pLedStripManager = LedStripManager::getInstance();
     pLedStripManager->context->request();
 }
