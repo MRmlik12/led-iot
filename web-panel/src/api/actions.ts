@@ -1,33 +1,21 @@
-import { RgbModel } from "./models/rgbModel.ts";
+import { LedStripModel } from "./models/ledStripModel.ts";
 
-export const changeLedStripColor = async (data: any) => {
-    await fetch("/color", {
+const BASE_API_ENDPOINT = "/api"
+
+export const changeLedStripState = async (data: any) => {
+    await fetch(`${BASE_API_ENDPOINT}/update`, {
         body: data,
         method: "POST"
     })
 }
 
-export const changeLedStripMode = async (data: any) => {
-    await fetch("mode", {
-        body: data,
-        method: "POST"
-    })
-}
-
-export const changeBrightness = async (data: any) => {
-    await fetch("brightness", {
-        body: data,
-        method: "POST"
-    })
-}
-
-export const getLedStripColor = async (): Promise<RgbModel | undefined> => {
-    return await fetch("/currentRgb")
+export const getLedStripState = async (): Promise<LedStripModel | undefined> => {
+    return await fetch(`${BASE_API_ENDPOINT}/current`)
         .then(async (data) => {
             if (data.ok) {
                 const json = await data.json();
 
-                return json as RgbModel;
+                return json as LedStripModel;
             }
         })
 }

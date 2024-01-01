@@ -1,6 +1,8 @@
 import './style.css'
-import { setupBrightnessRange, setupColorPicker, setupModeSelect } from "./init.ts";
+import { ledStripState, setupBrightnessRangeEvents, setupColorPicker, setupModeSelectEvents } from "./init.ts";
 import { BRIGHTNESS_RANGE_ID, DIV_PICKER_ID, MODE_RADIO_BUTTONS_ID } from './consts.ts';
+import { getLedStripState } from "./api/actions.ts";
+import { fromEvent } from "rxjs";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="container">
@@ -13,15 +15,24 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="modes">
          <label for="none">
             None
-            <input type="radio" class="${MODE_RADIO_BUTTONS_ID}" name="mode" value="0" checked>
+            <input id="none" type="radio" class="${MODE_RADIO_BUTTONS_ID}" name="mode" value="0" checked>
          </label>
          <label for="wave">
             Wave
-            <input type="radio" class="${MODE_RADIO_BUTTONS_ID}" name="mode" value="1">
+            <input id="wave" type="radio" class="${MODE_RADIO_BUTTONS_ID}" name="mode" value="1">
          </label>
     </div>
   </div>
 `
-setupColorPicker();
-setupBrightnessRange();
-setupModeSelect();
+
+fromEvent(document, 'DOMContentLoaded').subscribe(async () => {
+    setupColorPicker();
+    setupBrightnessRangeEvents();
+    setupModeSelectEvents();
+
+    const response = await getLedStripState();
+
+    if (response) {
+        ledStripState.next(response);
+    }
+});

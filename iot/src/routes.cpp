@@ -10,57 +10,26 @@ void notFound(AsyncWebServerRequest *request) {
 void registerRoutes(AsyncWebServer &webServer) {
     webServer.serveStatic("/", LittleFS, "/www/").setDefaultFile("index.html");
 
-    webServer.on("/color", HTTP_POST, [](AsyncWebServerRequest *request) {
-    },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
-        String body = (const char*) data;
-        if (body.length() == 0) {
-            request->send(400, "application/json", "{\"error\": \"body is empty\"}");
-            return;
-        }
-
+    webServer.on("/api/current", HTTP_GET, [](AsyncWebServerRequest *request) {
         DynamicJsonDocument jsonDocument(256);
-        ArduinoJson::deserializeJson(jsonDocument, body);
 
         auto pLedStripManager = LedStripManager::getInstance();
-        pLedStripManager->setMode(LedStripMode::NONE);
-        LedStripManager::getInstance()->setRGB(jsonDocument["r"], jsonDocument["g"], jsonDocument["b"]);
 
-        request->send(200, "application/json", body);
-    });
-
-    webServer.on("/currentColor", HTTP_GET, [](AsyncWebServerRequest *request) {
-        auto rgb = LedStripManager::getInstance()->getRGB();
-
-        DynamicJsonDocument jsonDocument(240);
-
+        auto rgb = pLedStripManager->getRGB();
         jsonDocument["r"] = rgb.r;
         jsonDocument["g"] = rgb.g;
         jsonDocument["b"] = rgb.b;
 
-        String response;
-        serializeJson(jsonDocument, response);
+        jsonDocument["mode"] = pLedStripManager->getMode();
+        jsonDocument["brightness"] = pLedStripManager->getBrightness();
 
-        request->send(200, "application/json", response);
-    });
-
-    webServer.on("/mode", HTTP_POST, [](AsyncWebServerRequest *request) {
-    },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
-        String body = (const char*) data;
-        if (body.length() == 0) {
-            request->send(400, "application/json", "{\"error\": \"body is empty\"}");
-            return;
-        }
-
-        DynamicJsonDocument jsonDocument(256);
-        ArduinoJson::deserializeJson(jsonDocument, body);
-
-        auto mode = static_cast<LedStripMode>(jsonDocument["mode"]);
-        LedStripManager::getInstance()->setMode(mode);
+        String body;
+        ArduinoJson::serializeJson(jsonDocument, body);
 
         request->send(200, "application/json", body);
     });
 
-    webServer.on("/brightness", HTTP_POST, [](AsyncWebServerRequest *request) {
+    webServer.on("/api/update", HTTP_POST, [](AsyncWebServerRequest *request) {
     },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
         String body = (const char*) data;
         if (body.length() == 0) {
@@ -71,10 +40,29 @@ void registerRoutes(AsyncWebServer &webServer) {
         DynamicJsonDocument jsonDocument(256);
         ArduinoJson::deserializeJson(jsonDocument, body);
 
-        auto level = static_cast<uint8_t>(jsonDocument["level"]);
-        LedStripManager::getInstance()->setBrightness(level);
+        auto r = jsonDocument["r"];
+        auto g = jsonDocument["g"];
+        auto b = jsonDocument["b"];
+        auto mode = jsonDocument["mode"];
+        auto level = jsonDocument["brightness"];
 
-        request->send(200);
+        auto pLedStripManager = LedStripManager::getInstance();
+
+        if (r != nullptr && g != nullptr && b != nullptr) {
+            pLedStripManager->setRGB(r, g, b);
+        }
+
+        if (mode != nullptr) {
+            pLedStripManager->setMode(static_cast<LedStripMode>(mode));
+        }
+
+        if (level != nullptr) {
+            pLedStripManager->setBrightness(static_cast<uint8_t>(level));
+        }
+
+        LedStripManager::getInstance()->setMode(mode);
+
+        request->send(200, "application/json", body);
     });
 
     webServer.onNotFound(notFound);

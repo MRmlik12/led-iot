@@ -49,6 +49,10 @@ void LedStripManager::setBrightness(uint8_t level) {
     FastLED.setBrightness(level);
 }
 
+uint8_t LedStripManager::getBrightness() {
+    return brightness_;
+}
+
 void Context::transitionTo(LedStripState *state) {
     if (this->state_ != nullptr)
         delete this->state_;

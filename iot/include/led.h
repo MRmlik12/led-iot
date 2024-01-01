@@ -77,6 +77,7 @@ public:
     void setBrightness(uint8_t level);
     LedStripMode getMode();
     CRGB getRGB();
+    uint8_t getBrightness();
 };
 
 void setupFastLED();
