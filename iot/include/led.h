@@ -1,8 +1,12 @@
 #ifndef IOT_LED_H
 #define IOT_LED_H
 
+#define LED_COUNT 26
+
 #include <FastLED.h>
 #include "config.h"
+
+static CRGB leds[LED_COUNT];
 
 enum LedStripMode {
     NONE,
@@ -44,6 +48,8 @@ public:
 };
 
 class NoneLedStripState : public LedStripState {
+private:
+    CRGB lastColor_ = {0, 0, 0};
 public:
     void Handle() override;
 };
@@ -59,12 +65,13 @@ private:
     int g_ = 0;
     int b_ = 0;
     uint8_t brightness_;
-    LedStripMode mode_ = LedStripMode::NONE;
+    LedStripMode mode_ = NONE;
+    static LedStripManager* instance_;
 protected:
-    LedStripManager() {
+    LedStripManager(): brightness_(50) {
         context = new Context(new NoneLedStripState);
     }
-    static LedStripManager* instance_;
+
 public:
     Context *context;
 

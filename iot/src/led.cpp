@@ -4,7 +4,6 @@
 #include "led.h"
 
 
-CRGB leds[LED_COUNT];
 LedStripManager* LedStripManager::instance_ = nullptr;
 
 LedStripManager *LedStripManager::getInstance() {
@@ -75,11 +74,17 @@ void WaveLedStripState::Handle() {
 }
 
 void NoneLedStripState::Handle() {
-    FastLED.showColor(LedStripManager::getInstance()->getRGB());
+    if (this->lastColor_ == LedStripManager::getInstance()->getRGB()) {
+        return;
+    }
+
+    this->lastColor_ = LedStripManager::getInstance()->getRGB();
+    FastLED.showColor(this->lastColor_);
 }
 
 void setupFastLED() {
     FastLED.addLeds<WS2812B, 5>(leds, LED_COUNT);
     FastLED.setMaxRefreshRate(200);
     FastLED.setBrightness(80);
+    FastLED.clear(true);
 }
