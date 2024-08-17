@@ -14,7 +14,7 @@ AsyncWebServer server(80);
 void setup() {
     LittleFS.begin();
 
-    auto config = getConfiguration();
+    auto config = Config::getConfiguration();
 
     WiFi.mode(WIFI_STA);
     WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -43,4 +43,3 @@ void loop() {
     auto pLedStripManager = LedStripManager::getInstance();
     pLedStripManager->context->request();
 }
-

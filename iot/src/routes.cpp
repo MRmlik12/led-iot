@@ -31,7 +31,7 @@ void registerRoutes(AsyncWebServer &webServer) {
 
     webServer.on("/api/update", HTTP_POST, [](AsyncWebServerRequest *request) {
     },  NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
-        String body = (const char*) data;
+        String body = reinterpret_cast<const char *>(data);
         if (body.length() == 0) {
             request->send(400, "application/json", "{\"error\": \"body is empty\"}");
             return;

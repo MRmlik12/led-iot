@@ -3,13 +3,16 @@
 #include <FastLED.h>
 #include "led.h"
 
+static CRGB leds[LED_COUNT];
 
 LedStripManager* LedStripManager::instance_ = nullptr;
 
 LedStripManager *LedStripManager::getInstance() {
-    if(instance_ == nullptr) {
-        instance_ = new LedStripManager();
+    if (instance_ == nullptr) {
+        auto pLedConfiguration = getConfiguration();
+        instance_ = new LedStripManager(pLedConfiguration);
     }
+
     return instance_;
 }
 
@@ -18,6 +21,8 @@ void LedStripManager::setRGB(int rColor, int gColor, int bColor) {
     g_ = gColor;
     b_ = bColor;
     FastLED.showColor(CRGB(r_, g_, b_));
+
+    save();
 }
 
 CRGB LedStripManager::getRGB() {
@@ -37,6 +42,8 @@ void LedStripManager::setMode(LedStripMode mode) {
         default:
             break;
     }
+
+    save();
 }
 
 LedStripMode LedStripManager::getMode() {
@@ -46,6 +53,14 @@ LedStripMode LedStripManager::getMode() {
 void LedStripManager::setBrightness(uint8_t level) {
     brightness_ = level;
     FastLED.setBrightness(level);
+
+    save();
+}
+
+void LedStripManager::loadConfiguration(LedConfiguration *configuration) {
+    this->setRGB(configuration->getR(), configuration->getG(), configuration->getB());
+    this->setBrightness(configuration->getBrightness());
+    this->setMode(configuration->getMode());
 }
 
 uint8_t LedStripManager::getBrightness() {

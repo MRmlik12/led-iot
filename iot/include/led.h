@@ -4,14 +4,9 @@
 #define LED_COUNT 26
 
 #include <FastLED.h>
+
 #include "config.h"
-
-static CRGB leds[LED_COUNT];
-
-enum LedStripMode {
-    NONE,
-    WAVE
-};
+#include "modes.h"
 
 class Context;
 
@@ -59,16 +54,11 @@ public:
     void Handle() override;
 };
 
-class LedStripManager {
+class LedStripManager : LedConfiguration {
 private:
-    int r_ = 0;
-    int g_ = 0;
-    int b_ = 0;
-    uint8_t brightness_;
-    LedStripMode mode_ = NONE;
     static LedStripManager* instance_;
 protected:
-    LedStripManager(): brightness_(50) {
+    LedStripManager(LedConfiguration *configuration): LedConfiguration(configuration->getR(), configuration->getG(), configuration->getB(), configuration->getBrightness(), configuration->getMode()) {
         context = new Context(new NoneLedStripState);
     }
 
@@ -82,6 +72,7 @@ public:
     void setRGB(int rColor, int gColor, int bColor);
     void setMode(LedStripMode mode);
     void setBrightness(uint8_t level);
+    void loadConfiguration(LedConfiguration *configuration);
     LedStripMode getMode();
     CRGB getRGB();
     uint8_t getBrightness();
