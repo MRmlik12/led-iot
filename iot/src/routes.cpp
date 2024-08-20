@@ -43,24 +43,24 @@ void registerRoutes(AsyncWebServer &webServer) {
         auto r = jsonDocument["r"];
         auto g = jsonDocument["g"];
         auto b = jsonDocument["b"];
-        auto mode = jsonDocument["mode"];
-        auto level = jsonDocument["brightness"];
+        auto mode = static_cast<LedStripMode>(jsonDocument["mode"]);
+        auto level = static_cast<uint8_t>(jsonDocument["brightness"]);
 
         auto pLedStripManager = LedStripManager::getInstance();
 
-        if (r != nullptr && g != nullptr && b != nullptr) {
+        if (r != nullptr && g != nullptr && b != nullptr && mode == NONE) {
             pLedStripManager->setRGB(r, g, b);
         }
 
-        if (mode != nullptr) {
-            pLedStripManager->setMode(static_cast<LedStripMode>(mode));
+        if (mode != pLedStripManager->getMode()) {
+            pLedStripManager->setMode(mode);
         }
 
-        if (level != nullptr) {
-            pLedStripManager->setBrightness(static_cast<uint8_t>(level));
+        if (level != pLedStripManager->getBrightness()) {
+            pLedStripManager->setBrightness(level);
         }
 
-        LedStripManager::getInstance()->setMode(mode);
+        pLedStripManager->setMode(mode);
 
         request->send(200, "application/json", body);
     });

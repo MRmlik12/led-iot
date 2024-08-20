@@ -8,14 +8,15 @@
 #include "config.h"
 #include "modes.h"
 
+static CRGB leds[LED_COUNT];
+
 class Context;
 
 class LedStripState {
 protected:
     Context *context_;
 public:
-    virtual ~LedStripState() {
-    }
+    virtual ~LedStripState() = default;
 
     void set_context(Context *context_) {
         this->context_ = context_;
@@ -27,9 +28,9 @@ public:
 class Context {
 private:
     LedStripState *state_;
-protected:
-    Context() {}
 public:
+    Context() : state_(nullptr) {}
+
     Context(LedStripState *state) : state_(nullptr) {
         this->transitionTo(state);
     }
@@ -50,6 +51,8 @@ public:
 };
 
 class WaveLedStripState : public LedStripState {
+private:
+    uint8_t lastHue_ = 0;
 public:
     void Handle() override;
 };
@@ -59,6 +62,13 @@ private:
     static LedStripManager* instance_;
 protected:
     LedStripManager(LedConfiguration *configuration): LedConfiguration(configuration->getR(), configuration->getG(), configuration->getB(), configuration->getBrightness(), configuration->getMode()) {
+        context = new Context();
+        this->setRGB(configuration->getR(), configuration->getB(), configuration->getG());
+        this->setBrightness(configuration->getBrightness());
+        this->setMode(configuration->getMode());
+    }
+
+    LedStripManager(): LedConfiguration(0, 0, 0, 0, NONE) {
         context = new Context(new NoneLedStripState);
     }
 

@@ -3,8 +3,6 @@
 #include <FastLED.h>
 #include "led.h"
 
-static CRGB leds[LED_COUNT];
-
 LedStripManager* LedStripManager::instance_ = nullptr;
 
 LedStripManager *LedStripManager::getInstance() {
@@ -68,8 +66,7 @@ uint8_t LedStripManager::getBrightness() {
 }
 
 void Context::transitionTo(LedStripState *state) {
-    if (this->state_ != nullptr)
-        delete this->state_;
+    delete this->state_;
 
     this->state_ = state;
     this->state_->set_context(this);
@@ -84,16 +81,20 @@ void WaveLedStripState::Handle() {
     uint8_t deltaHue= 10;
     uint8_t thisHue = beat8(thisSpeed,255);
 
-    fill_rainbow(leds, LED_COUNT, thisHue, deltaHue);
-    FastLED.show();
+    if (thisHue != lastHue_) {
+        fill_rainbow(leds, LED_COUNT, thisHue, deltaHue);
+        FastLED.show();
+        lastHue_ = thisHue;
+    }
 }
 
 void NoneLedStripState::Handle() {
-    if (this->lastColor_ == LedStripManager::getInstance()->getRGB()) {
+    auto rgbToChange = LedStripManager::getInstance()->getRGB();
+    if (this->lastColor_ == rgbToChange) {
         return;
     }
 
-    this->lastColor_ = LedStripManager::getInstance()->getRGB();
+    this->lastColor_ = rgbToChange;
     FastLED.showColor(this->lastColor_);
 }
 
